@@ -1,0 +1,15 @@
+packages:
+  - '.'
+
+# Seguridad: solo instalar versiones publicadas hace al menos 1 día (en minutos).
+# Los paquetes comprometidos suelen detectarse y retirarse en horas.
+minimumReleaseAge: 1440
+
+# Scripts de instalación (postinstall, etc.) bloqueados por defecto.
+# Solo se permiten los que aparecen aquí con `true`.
+allowBuilds:
+  '@parcel/watcher': false
+  esbuild: false
+  lmdb: false
+  msgpackr-extract: false
+  supabase: true # descarga el binario oficial de la Supabase CLI
