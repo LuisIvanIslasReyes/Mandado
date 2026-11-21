@@ -43,6 +43,7 @@ describe('soloFamilia', () => {
   it('sin sesión desde el inicio no agrega ?volver', async () => {
     configurar(false, null);
     expect(await correr(soloFamilia, '/')).toBe('/entrar');
+    expect(await correr(soloFamilia, '/inventario')).toBe('/entrar');
   });
 
   it('con sesión pero sin acceso manda a /sin-acceso', async () => {

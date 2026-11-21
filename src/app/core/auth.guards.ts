@@ -9,7 +9,8 @@ export const soloFamilia: CanActivateFn = async (_ruta, estado) => {
   await auth.listo;
 
   if (!auth.sesion()) {
-    const volver = estado.url === '/' ? undefined : estado.url;
+    // La pantalla de inicio no necesita ?volver= ("/" redirige a /inventario).
+    const volver = estado.url === '/' || estado.url === '/inventario' ? undefined : estado.url;
     return router.createUrlTree(['/entrar'], { queryParams: { volver } });
   }
   // `null` (no se pudo comprobar) deja pasar: RLS protege los datos de todas formas.
