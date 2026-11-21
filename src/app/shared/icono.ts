@@ -1,6 +1,16 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type NombreIcono = 'canasta' | 'inventario' | 'carrito' | 'caducidad' | 'salir';
+export type NombreIcono =
+  | 'canasta'
+  | 'inventario'
+  | 'carrito'
+  | 'caducidad'
+  | 'salir'
+  | 'cerrar'
+  | 'mas'
+  | 'menos'
+  | 'buscar'
+  | 'editar';
 
 /**
  * Íconos de Lucide (licencia ISC) dibujados en línea: no hay descargas y
@@ -67,6 +77,27 @@ export type NombreIcono = 'canasta' | 'inventario' | 'carrito' | 'caducidad' | '
           <svg:path d="m16 17 5-5-5-5" />
           <svg:path d="M21 12H9" />
           <svg:path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+        }
+        @case ('cerrar') {
+          <svg:path d="M18 6 6 18" />
+          <svg:path d="m6 6 12 12" />
+        }
+        @case ('mas') {
+          <svg:path d="M5 12h14" />
+          <svg:path d="M12 5v14" />
+        }
+        @case ('menos') {
+          <svg:path d="M5 12h14" />
+        }
+        @case ('buscar') {
+          <svg:circle cx="11" cy="11" r="8" />
+          <svg:path d="m21 21-4.3-4.3" />
+        }
+        @case ('editar') {
+          <svg:path
+            d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"
+          />
+          <svg:path d="m15 5 4 4" />
         }
       }
     </svg>

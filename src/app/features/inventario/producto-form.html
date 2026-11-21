@@ -1,0 +1,162 @@
+<form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+  <div class="campo">
+    <label class="campo-etiqueta" for="producto-nombre">Nombre</label>
+    <input
+      id="producto-nombre"
+      class="campo-entrada"
+      type="text"
+      autocomplete="off"
+      autocapitalize="sentences"
+      placeholder="Ej. Leche entera"
+      formControlName="nombre"
+      [attr.aria-invalid]="errorDe('nombre') ? 'true' : null"
+      [attr.aria-describedby]="errorDe('nombre') ? 'producto-nombre-error' : null"
+    />
+    @if (errorDe('nombre'); as mensaje) {
+      <p id="producto-nombre-error" class="campo-error">{{ mensaje }}</p>
+    }
+  </div>
+
+  <div class="campo">
+    <label class="campo-etiqueta" for="producto-marca">
+      Marca <span class="opcional">(opcional)</span>
+    </label>
+    <input
+      id="producto-marca"
+      class="campo-entrada"
+      type="text"
+      autocomplete="off"
+      formControlName="marca"
+    />
+  </div>
+
+  <div class="fila-campos">
+    <div class="campo">
+      <label class="campo-etiqueta" for="producto-ubicacion">Dónde se guarda</label>
+      <select id="producto-ubicacion" class="campo-entrada" formControlName="ubicacion_id">
+        <option [ngValue]="null">Sin ubicación</option>
+        @for (u of store.ubicaciones(); track u.id) {
+          <option [ngValue]="u.id">{{ u.nombre }}</option>
+        }
+      </select>
+    </div>
+    <div class="campo">
+      <label class="campo-etiqueta" for="producto-categoria">Categoría</label>
+      <select id="producto-categoria" class="campo-entrada" formControlName="categoria_id">
+        <option [ngValue]="null">Sin categoría</option>
+        @for (c of store.categorias(); track c.id) {
+          <option [ngValue]="c.id">{{ c.nombre }}</option>
+        }
+      </select>
+    </div>
+  </div>
+
+  <div class="fila-campos">
+    <div class="campo">
+      <label class="campo-etiqueta" for="producto-unidad">Se cuenta en</label>
+      <select id="producto-unidad" class="campo-entrada" formControlName="unidad">
+        @for (u of unidades; track u.valor) {
+          <option [ngValue]="u.valor">{{ u.etiqueta }}</option>
+        }
+      </select>
+    </div>
+    @if (!editando) {
+      <div class="campo">
+        <label class="campo-etiqueta" for="producto-cantidad">Cuánto hay</label>
+        <input
+          id="producto-cantidad"
+          class="campo-entrada"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="any"
+          placeholder="0"
+          formControlName="cantidad"
+          [attr.aria-invalid]="errorDe('cantidad') ? 'true' : null"
+          [attr.aria-describedby]="errorDe('cantidad') ? 'producto-cantidad-error' : null"
+        />
+        @if (errorDe('cantidad'); as mensaje) {
+          <p id="producto-cantidad-error" class="campo-error">{{ mensaje }}</p>
+        }
+      </div>
+    }
+  </div>
+
+  <div class="campo">
+    <label class="campo-etiqueta" for="producto-minimo">
+      Avisar cuando queden <span class="opcional">(opcional)</span>
+    </label>
+    <input
+      id="producto-minimo"
+      class="campo-entrada"
+      type="number"
+      inputmode="decimal"
+      min="0"
+      step="any"
+      placeholder="0"
+      formControlName="minimo"
+      [attr.aria-invalid]="errorDe('minimo') ? 'true' : null"
+      [attr.aria-describedby]="
+        errorDe('minimo') ? 'producto-minimo-error' : 'producto-minimo-ayuda'
+      "
+    />
+    @if (errorDe('minimo'); as mensaje) {
+      <p id="producto-minimo-error" class="campo-error">{{ mensaje }}</p>
+    } @else {
+      <p id="producto-minimo-ayuda" class="campo-ayuda">
+        Cuando quede esto o menos, se agrega solo a la lista del súper.
+      </p>
+    }
+  </div>
+
+  <div class="campo">
+    <label class="campo-etiqueta" for="producto-caducidad">
+      Caduca el <span class="opcional">(opcional)</span>
+    </label>
+    <input id="producto-caducidad" class="campo-entrada" type="date" formControlName="caduca_el" />
+  </div>
+
+  @if (editando) {
+    <p class="campo-ayuda">Para cambiar cuánto hay, usa "Conté" en el detalle del producto.</p>
+  }
+
+  @if (error(); as mensaje) {
+    <p class="mensaje mensaje-error" role="alert">{{ mensaje }}</p>
+  }
+
+  <button type="submit" class="boton boton-primario boton-ancho" [attr.aria-busy]="guardando()">
+    @if (guardando()) {
+      <span class="giro" aria-hidden="true"></span>
+      Guardando…
+    } @else {
+      {{ editando ? 'Guardar cambios' : 'Agregar producto' }}
+    }
+  </button>
+
+  @if (editando) {
+    <div class="zona-quitar">
+      @if (!confirmandoQuitar()) {
+        <button type="button" class="boton boton-texto" (click)="confirmandoQuitar.set(true)">
+          Quitar del inventario
+        </button>
+      } @else {
+        <div class="confirmar" role="group" aria-labelledby="confirmar-quitar">
+          <p id="confirmar-quitar">
+            ¿Quitar {{ producto()?.nombre }}? Ya no aparecerá en el inventario ni en la lista, pero
+            su historial se guarda.
+          </p>
+          <div class="confirmar-botones">
+            <button
+              type="button"
+              class="boton boton-secundario"
+              (click)="confirmandoQuitar.set(false)"
+            >
+              No, dejarlo
+            </button>
+            <button type="button" class="boton boton-peligro" (click)="quitar()">Sí, quitar</button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</form>

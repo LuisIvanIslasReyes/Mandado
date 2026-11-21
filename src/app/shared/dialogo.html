@@ -1,0 +1,22 @@
+<dialog
+  #dialogo
+  class="dialogo"
+  [attr.aria-labelledby]="idTitulo"
+  (close)="cerrado.emit()"
+  (click)="alTocar($event)"
+>
+  <div class="dialogo-contenido">
+    <header class="dialogo-encabezado">
+      <div class="dialogo-titulos">
+        <h2 [id]="idTitulo">{{ titulo() }}</h2>
+        @if (subtitulo(); as texto) {
+          <p>{{ texto }}</p>
+        }
+      </div>
+      <button type="button" class="dialogo-cerrar" aria-label="Cerrar" (click)="cerrar()">
+        <app-icono nombre="cerrar" />
+      </button>
+    </header>
+    <ng-content />
+  </div>
+</dialog>

@@ -1,0 +1,52 @@
+form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.fila-campos {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-3);
+
+  .campo-entrada {
+    min-width: 0;
+  }
+}
+
+.opcional {
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.zona-quitar {
+  display: grid;
+  justify-items: center;
+  padding-top: var(--espacio-2);
+  border-top: 1px solid var(--color-borde);
+}
+
+.confirmar {
+  display: grid;
+  gap: var(--espacio-3);
+  width: 100%;
+  padding-top: var(--espacio-2);
+
+  p {
+    color: var(--color-texto-suave);
+    font-size: var(--texto-sm);
+  }
+}
+
+.confirmar-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-3);
+}
+
+.boton-texto {
+  color: var(--color-error);
+
+  &:hover:not(:disabled) {
+    color: var(--color-error);
+  }
+}

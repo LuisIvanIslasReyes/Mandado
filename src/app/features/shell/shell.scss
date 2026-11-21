@@ -159,6 +159,66 @@ $alto-pestanas: 4rem;
     max(var(--espacio-4), env(safe-area-inset-left));
 }
 
+// ===== Avisos (arriba de las pestañas) =====
+.avisos {
+  position: fixed;
+  right: max(var(--espacio-4), env(safe-area-inset-right));
+  bottom: calc(#{$alto-pestanas} + env(safe-area-inset-bottom) + var(--espacio-3));
+  left: max(var(--espacio-4), env(safe-area-inset-left));
+  z-index: 20;
+  display: grid;
+  justify-items: center;
+  pointer-events: none;
+}
+
+.aviso {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  width: min(100%, 28rem);
+  padding: var(--espacio-2) var(--espacio-2) var(--espacio-2) var(--espacio-4);
+  border-radius: var(--radio-sm);
+  background: var(--color-texto);
+  color: var(--color-fondo);
+  font-weight: 500;
+  pointer-events: auto;
+  animation: aviso-entra 180ms ease-out;
+
+  p {
+    flex: 1;
+  }
+}
+
+.aviso-error {
+  background: var(--color-error);
+  color: var(--color-superficie);
+}
+
+.aviso-cerrar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  app-icono {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}
+
+@keyframes aviso-entra {
+  from {
+    transform: translateY(0.5rem);
+    opacity: 0;
+  }
+}
+
 // ===== Pantallas grandes =====
 @media (min-width: 64rem) {
   .app {
@@ -209,6 +269,12 @@ $alto-pestanas: 4rem;
     .enlace-icono {
       background: none;
     }
+  }
+
+  .avisos {
+    left: auto;
+    bottom: var(--espacio-6);
+    width: 28rem;
   }
 
   .contenido {

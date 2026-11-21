@@ -1,0 +1,196 @@
+<div class="pagina">
+  <header class="pagina-encabezado encabezado-con-accion">
+    <div>
+      <h1>Inventario</h1>
+      <p>Lo que hay en la casa.</p>
+    </div>
+    @if (store.estado() === 'listo' && store.productos().length) {
+      <button type="button" class="boton boton-primario" (click)="abrir({ tipo: 'crear' })">
+        <app-icono class="icono-boton" nombre="mas" />
+        Agregar
+      </button>
+    }
+  </header>
+
+  @switch (store.estado()) {
+    @case ('error') {
+      <div class="mensaje mensaje-error estado-error" role="alert">
+        <p>No se pudo cargar el inventario. Revisa tu internet.</p>
+        <button type="button" class="boton boton-secundario" (click)="store.iniciar()">
+          Reintentar
+        </button>
+      </div>
+    }
+    @case ('listo') {
+      @if (!store.productos().length) {
+        <app-vacio
+          icono="inventario"
+          titulo="Todavía no hay productos"
+          texto="Agrega lo que hay en la casa para saber cuánto queda, dónde está y cuándo caduca."
+        >
+          <button type="button" class="boton boton-primario" (click)="abrir({ tipo: 'crear' })">
+            <app-icono class="icono-boton" nombre="mas" />
+            Agregar el primero
+          </button>
+        </app-vacio>
+      } @else {
+        <div class="filtros" role="search">
+          <div class="buscador">
+            <label class="solo-lectores" for="buscar">Buscar producto</label>
+            <app-icono class="buscador-icono" nombre="buscar" />
+            <input
+              id="buscar"
+              class="campo-entrada"
+              type="search"
+              placeholder="Buscar producto"
+              autocomplete="off"
+              [value]="busqueda()"
+              (input)="busqueda.set($any($event.target).value)"
+            />
+          </div>
+          <div class="selectores">
+            <label class="solo-lectores" for="filtro-ubicacion">Ubicación</label>
+            <select
+              id="filtro-ubicacion"
+              class="campo-entrada"
+              (change)="alElegir($event, ubicacion)"
+            >
+              <option value="" [selected]="ubicacion() === null">Ubicación</option>
+              @for (u of store.ubicaciones(); track u.id) {
+                <option [value]="u.id" [selected]="ubicacion() === u.id">{{ u.nombre }}</option>
+              }
+            </select>
+            <label class="solo-lectores" for="filtro-categoria">Categoría</label>
+            <select
+              id="filtro-categoria"
+              class="campo-entrada"
+              (change)="alElegir($event, categoria)"
+            >
+              <option value="" [selected]="categoria() === null">Categoría</option>
+              @for (c of store.categorias(); track c.id) {
+                <option [value]="c.id" [selected]="categoria() === c.id">{{ c.nombre }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        @if (filas().length) {
+          <p class="conteo" aria-live="polite">
+            {{ filas().length }} {{ filas().length === 1 ? 'producto' : 'productos' }}
+          </p>
+          <ul class="productos">
+            @for (fila of filas(); track fila.producto.id) {
+              <li class="producto">
+                <button
+                  type="button"
+                  class="producto-info"
+                  (click)="abrir({ tipo: 'detalle', id: fila.producto.id })"
+                >
+                  <span class="producto-nombre">
+                    {{ fila.producto.nombre }}
+                    @if (fila.producto.marca) {
+                      <span class="producto-marca">{{ fila.producto.marca }}</span>
+                    }
+                  </span>
+                  @if (fila.lugar) {
+                    <span class="producto-lugar">{{ fila.lugar }}</span>
+                  }
+                  @if (fila.stock !== 'ok' || fila.caducidad) {
+                    <span class="etiquetas">
+                      @if (fila.stock === 'agotado') {
+                        <span class="etiqueta etiqueta-alerta">Se acabó</span>
+                      } @else if (fila.stock === 'bajo') {
+                        <span class="etiqueta etiqueta-aviso">Queda poco</span>
+                      }
+                      @if (fila.caducidad; as cad) {
+                        <span
+                          class="etiqueta"
+                          [class.etiqueta-alerta]="cad.nivel === 'vencido'"
+                          [class.etiqueta-aviso]="cad.nivel === 'pronto'"
+                          [class.etiqueta-neutra]="cad.nivel === 'ok'"
+                          >{{ cad.texto }}</span
+                        >
+                      }
+                    </span>
+                  }
+                </button>
+
+                <div
+                  class="cantidad"
+                  role="group"
+                  [attr.aria-label]="'Cantidad de ' + fila.producto.nombre"
+                >
+                  <button
+                    type="button"
+                    class="boton-cantidad"
+                    [attr.aria-label]="'Usé ' + fila.pasoTexto + ' de ' + fila.producto.nombre"
+                    [disabled]="fila.producto.cantidad <= 0"
+                    [attr.aria-busy]="ocupado(fila.producto.id)"
+                    (click)="usar(fila)"
+                  >
+                    <app-icono nombre="menos" />
+                  </button>
+                  <span class="cantidad-valor" [class.cantidad-cero]="fila.stock === 'agotado'">
+                    {{ fila.cantidad }}
+                  </span>
+                  <button
+                    type="button"
+                    class="boton-cantidad"
+                    [attr.aria-label]="'Compré ' + fila.pasoTexto + ' de ' + fila.producto.nombre"
+                    [attr.aria-busy]="ocupado(fila.producto.id)"
+                    (click)="comprar(fila)"
+                  >
+                    <app-icono nombre="mas" />
+                  </button>
+                </div>
+              </li>
+            }
+          </ul>
+        } @else {
+          <div class="sin-resultados">
+            <p>No hay productos con esos filtros.</p>
+            <button type="button" class="boton boton-secundario" (click)="quitarFiltros()">
+              Quitar filtros
+            </button>
+          </div>
+        }
+      }
+    }
+    @default {
+      <ul class="productos" aria-busy="true" aria-label="Cargando inventario">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <li class="producto producto-cargando" aria-hidden="true">
+            <span class="hueso hueso-largo"></span>
+            <span class="hueso hueso-corto"></span>
+          </li>
+        }
+      </ul>
+    }
+  }
+</div>
+
+@switch (ventana()?.tipo) {
+  @case ('crear') {
+    <app-dialogo titulo="Agregar producto" (cerrado)="cerrar()">
+      <app-producto-form (listo)="cerrar()" />
+    </app-dialogo>
+  }
+  @case ('editar') {
+    @if (productoAbierto(); as producto) {
+      <app-dialogo titulo="Editar producto" [subtitulo]="producto.nombre" (cerrado)="cerrar()">
+        <app-producto-form [producto]="producto" (listo)="cerrar()" />
+      </app-dialogo>
+    }
+  }
+  @case ('detalle') {
+    @if (productoAbierto(); as producto) {
+      <app-dialogo [titulo]="producto.nombre" [subtitulo]="producto.marca" (cerrado)="cerrar()">
+        <app-producto-detalle
+          [producto]="producto"
+          (listo)="cerrar()"
+          (editar)="abrir({ tipo: 'editar', id: producto.id })"
+        />
+      </app-dialogo>
+    }
+  }
+}

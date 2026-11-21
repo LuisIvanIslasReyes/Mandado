@@ -1,0 +1,159 @@
+<section class="resumen" aria-label="Resumen">
+  <div class="resumen-cantidad">
+    <p class="cantidad-grande" [class.cantidad-cero]="resumen().stock === 'agotado'">
+      {{ resumen().cantidad }}
+    </p>
+    @if (resumen().stock !== 'ok' || resumen().caducidad) {
+      <div class="etiquetas">
+        @if (resumen().stock === 'agotado') {
+          <span class="etiqueta etiqueta-alerta">Se acabó</span>
+        } @else if (resumen().stock === 'bajo') {
+          <span class="etiqueta etiqueta-aviso">Queda poco</span>
+        }
+        @if (resumen().caducidad; as cad) {
+          <span
+            class="etiqueta"
+            [class.etiqueta-alerta]="cad.nivel === 'vencido'"
+            [class.etiqueta-aviso]="cad.nivel === 'pronto'"
+            [class.etiqueta-neutra]="cad.nivel === 'ok'"
+            >{{ cad.texto }}</span
+          >
+        }
+      </div>
+    }
+  </div>
+
+  <dl class="datos">
+    <div>
+      <dt>Dónde</dt>
+      <dd>{{ resumen().ubicacion }}</dd>
+    </div>
+    <div>
+      <dt>Categoría</dt>
+      <dd>{{ resumen().categoria }}</dd>
+    </div>
+    <div>
+      <dt>Avisar con</dt>
+      <dd>{{ resumen().minimo }}</dd>
+    </div>
+  </dl>
+
+  <button type="button" class="boton boton-secundario" (click)="editar.emit()">
+    <app-icono class="icono-boton" nombre="editar" />
+    Editar producto
+  </button>
+</section>
+
+<form class="registrar" [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+  <fieldset class="tipos">
+    <legend class="campo-etiqueta">¿Qué pasó?</legend>
+    <div class="tipos-opciones">
+      @for (t of tipos; track t.valor) {
+        <label class="tipo">
+          <input type="radio" name="tipo" formControlName="tipo" [value]="t.valor" />
+          <span>{{ t.etiqueta }}</span>
+        </label>
+      }
+    </div>
+  </fieldset>
+
+  <div class="fila-campos" [class.una-columna]="tipo() !== 'compra'">
+    <div class="campo">
+      <label class="campo-etiqueta" for="movimiento-cantidad">{{ etiquetaCantidad() }}</label>
+      <div class="con-unidad">
+        <input
+          id="movimiento-cantidad"
+          class="campo-entrada"
+          type="number"
+          inputmode="decimal"
+          min="0"
+          step="any"
+          formControlName="cantidad"
+          [attr.aria-invalid]="errorCantidad() ? 'true' : null"
+          [attr.aria-describedby]="errorCantidad() ? 'movimiento-cantidad-error' : null"
+        />
+        <span class="unidad" aria-hidden="true">{{ unidadPlural() }}</span>
+      </div>
+      @if (errorCantidad(); as mensaje) {
+        <p id="movimiento-cantidad-error" class="campo-error">{{ mensaje }}</p>
+      }
+    </div>
+
+    @if (tipo() === 'compra') {
+      <div class="campo">
+        <label class="campo-etiqueta" for="movimiento-precio">
+          Precio total <span class="opcional">(opcional)</span>
+        </label>
+        <div class="con-unidad con-prefijo">
+          <span class="prefijo" aria-hidden="true">$</span>
+          <input
+            id="movimiento-precio"
+            class="campo-entrada"
+            type="number"
+            inputmode="decimal"
+            min="0"
+            step="any"
+            formControlName="precio"
+          />
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="campo">
+    <label class="campo-etiqueta" for="movimiento-nota">
+      Nota <span class="opcional">(opcional)</span>
+    </label>
+    <input
+      id="movimiento-nota"
+      class="campo-entrada"
+      type="text"
+      autocomplete="off"
+      placeholder="Ej. para la comida del domingo"
+      formControlName="nota"
+    />
+  </div>
+
+  @if (error(); as mensaje) {
+    <p class="mensaje mensaje-error" role="alert">{{ mensaje }}</p>
+  }
+
+  <button type="submit" class="boton boton-primario boton-ancho" [attr.aria-busy]="guardando()">
+    @if (guardando()) {
+      <span class="giro" aria-hidden="true"></span>
+      Guardando…
+    } @else {
+      Registrar
+    }
+  </button>
+</form>
+
+<section class="historial" aria-labelledby="historial-titulo">
+  <h3 id="historial-titulo">Últimos movimientos</h3>
+  @switch (historial()) {
+    @case ('cargando') {
+      <p class="historial-nota">Cargando…</p>
+    }
+    @case ('error') {
+      <p class="historial-nota">No se pudo cargar el historial.</p>
+    }
+    @default {
+      @if ($any(historial()).length) {
+        <ol class="movimientos">
+          @for (m of $any(historial()); track m.id) {
+            @let d = describir(m);
+            <li>
+              <span class="movimiento-titulo">{{ d.titulo }}</span>
+              <span class="movimiento-detalle">{{ d.detalle }}</span>
+              @if (m.nota) {
+                <span class="movimiento-nota">“{{ m.nota }}”</span>
+              }
+            </li>
+          }
+        </ol>
+      } @else {
+        <p class="historial-nota">Todavía no hay movimientos.</p>
+      }
+    }
+  }
+</section>

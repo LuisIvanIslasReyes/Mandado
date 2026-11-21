@@ -45,4 +45,21 @@
   <main class="contenido">
     <router-outlet />
   </main>
+
+  <!-- Siempre presente para que los lectores de pantalla anuncien cada aviso -->
+  <div class="avisos" aria-live="polite">
+    @if (avisos.actual(); as aviso) {
+      <div class="aviso" [class.aviso-error]="aviso.tipo === 'error'">
+        <p>{{ aviso.texto }}</p>
+        <button
+          type="button"
+          class="aviso-cerrar"
+          aria-label="Cerrar aviso"
+          (click)="avisos.cerrar()"
+        >
+          <app-icono nombre="cerrar" />
+        </button>
+      </div>
+    }
+  </div>
 </div>

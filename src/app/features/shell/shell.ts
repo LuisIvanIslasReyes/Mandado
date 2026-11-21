@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { Avisos } from '../../shared/avisos';
 import { SupabaseService } from '../../core/supabase.service';
 import { Icono, NombreIcono } from '../../shared/icono';
 import { Marca } from '../../shared/marca';
@@ -26,6 +27,7 @@ export class Shell {
   private readonly auth = inject(AuthService);
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
+  protected readonly avisos = inject(Avisos);
 
   protected readonly secciones: Seccion[] = [
     { ruta: '/inventario', etiqueta: 'Inventario', icono: 'inventario' },
