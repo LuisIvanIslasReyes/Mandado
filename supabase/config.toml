@@ -249,6 +249,17 @@ otp_expiry = 3600
 # admin_email = "admin@email.com"
 # sender_name = "Admin"
 
+# Correos con el código de 6 dígitos para entrar (Supabase usa "confirmation"
+# la primera vez que alguien entra y "magic_link" las siguientes).
+# En producción, copia la misma plantilla en Authentication > Emails del panel.
+[auth.email.template.confirmation]
+subject = "Tu código para entrar a Mandado"
+content_path = "./supabase/templates/codigo.html"
+
+[auth.email.template.magic_link]
+subject = "Tu código para entrar a Mandado"
+content_path = "./supabase/templates/codigo.html"
+
 # Uncomment to customize email template
 # [auth.email.template.invite]
 # subject = "You have been invited"

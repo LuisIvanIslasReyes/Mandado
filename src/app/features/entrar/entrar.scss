@@ -1,0 +1,26 @@
+form {
+  display: grid;
+  gap: var(--espacio-4);
+}
+
+.campo-codigo {
+  // Números grandes y parejos; el espaciado extra de la izquierda compensa
+  // el letter-spacing para que el código se vea centrado.
+  padding-left: calc(var(--espacio-4) + 0.5em);
+  font-size: 1.5rem;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.5em;
+  text-align: center;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+  margin-top: calc(var(--espacio-2) * -1);
+}
+
+[aria-busy='true'] {
+  cursor: progress;
+}

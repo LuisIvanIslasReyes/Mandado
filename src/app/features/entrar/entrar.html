@@ -1,0 +1,124 @@
+<main class="pantalla-acceso">
+  <div class="tarjeta-acceso">
+    <app-marca />
+
+    @if (paso() === 'correo') {
+      <div class="encabezado">
+        <h1>Entra a tu casa</h1>
+        <p>El inventario de la casa y la lista del súper, compartidos con tu familia.</p>
+      </div>
+
+      <form [formGroup]="formCorreo" (ngSubmit)="pedirCodigo()" novalidate>
+        <div class="campo">
+          <label class="campo-etiqueta" for="correo">Correo electrónico</label>
+          <input
+            #campoCorreo
+            id="correo"
+            class="campo-entrada"
+            type="email"
+            inputmode="email"
+            autocomplete="email"
+            autocapitalize="none"
+            spellcheck="false"
+            formControlName="correo"
+            [attr.aria-invalid]="errorCorreo() ? 'true' : null"
+            [attr.aria-describedby]="errorCorreo() ? 'correo-error' : 'correo-ayuda'"
+          />
+          @if (errorCorreo(); as mensaje) {
+            <p id="correo-error" class="campo-error">{{ mensaje }}</p>
+          } @else {
+            <p id="correo-ayuda" class="campo-ayuda">
+              Te mandamos un código de {{ longitud }} dígitos. No necesitas contraseña.
+            </p>
+          }
+        </div>
+
+        @if (error(); as mensaje) {
+          <p class="mensaje mensaje-error" role="alert">{{ mensaje }}</p>
+        }
+
+        <button
+          type="submit"
+          class="boton boton-primario boton-ancho"
+          [attr.aria-busy]="enviando()"
+          [attr.aria-disabled]="enviando()"
+        >
+          @if (enviando()) {
+            <span class="giro" aria-hidden="true"></span>
+            Enviando…
+          } @else {
+            Enviarme un código
+          }
+        </button>
+      </form>
+    } @else {
+      <div class="encabezado">
+        <h1>Revisa tu correo</h1>
+        <p>
+          Escribe el código que mandamos a <strong>{{ correoEnviado() }}</strong
+          >. Si no lo ves, busca en spam.
+        </p>
+      </div>
+
+      <form [formGroup]="formCodigo" (ngSubmit)="entrar()" novalidate>
+        <div class="campo">
+          <label class="campo-etiqueta" for="codigo">Código de {{ longitud }} dígitos</label>
+          <input
+            #campoCodigo
+            id="codigo"
+            class="campo-entrada campo-codigo"
+            type="text"
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            formControlName="codigo"
+            (input)="alEscribirCodigo()"
+            [attr.aria-invalid]="errorCodigo() ? 'true' : null"
+            [attr.aria-describedby]="errorCodigo() ? 'codigo-error' : null"
+          />
+          @if (errorCodigo(); as mensaje) {
+            <p id="codigo-error" class="campo-error">{{ mensaje }}</p>
+          }
+        </div>
+
+        @if (error(); as mensaje) {
+          <p class="mensaje mensaje-error" role="alert">{{ mensaje }}</p>
+        }
+        @if (aviso(); as mensaje) {
+          <p class="mensaje mensaje-aviso" role="status">{{ mensaje }}</p>
+        }
+
+        <button
+          type="submit"
+          class="boton boton-primario boton-ancho"
+          [attr.aria-busy]="enviando()"
+          [attr.aria-disabled]="enviando()"
+        >
+          @if (enviando()) {
+            <span class="giro" aria-hidden="true"></span>
+            Entrando…
+          } @else {
+            Entrar
+          }
+        </button>
+      </form>
+
+      <div class="acciones">
+        <button
+          type="button"
+          class="boton boton-texto"
+          (click)="reenviar()"
+          [disabled]="segundosReenvio() > 0"
+        >
+          @if (segundosReenvio() > 0) {
+            Reenviar en {{ segundosReenvio() }} s
+          } @else {
+            Reenviar código
+          }
+        </button>
+        <button type="button" class="boton boton-texto" (click)="usarOtroCorreo()">
+          Usar otro correo
+        </button>
+      </div>
+    }
+  </div>
+</main>
