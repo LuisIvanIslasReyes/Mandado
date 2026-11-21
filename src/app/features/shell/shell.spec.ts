@@ -3,19 +3,29 @@ import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { SupabaseService } from '../../core/supabase.service';
+import { InventarioStore } from '../../core/inventario.store';
+import { ListaStore } from '../../core/lista.store';
+import { InventarioFalso, producto } from '../../../testing/inventario-falso';
+import { ListaFalsa, item } from '../../../testing/lista-falsa';
 import { Shell } from './shell';
 
 describe('Shell', () => {
   let fixture: ComponentFixture<Shell>;
   let salir: ReturnType<typeof vi.fn>;
+  let inventario: InventarioFalso;
+  let lista: ListaFalsa;
 
   async function crear(nombre: string | null) {
     salir = vi.fn().mockResolvedValue(undefined);
+    inventario = new InventarioFalso();
+    lista = new ListaFalsa();
     const perfil = { data: nombre ? { nombre } : null };
     await TestBed.configureTestingModule({
       imports: [Shell],
       providers: [
         provideRouter([]),
+        { provide: InventarioStore, useValue: inventario },
+        { provide: ListaStore, useValue: lista },
         {
           provide: AuthService,
           useValue: { usuario: signal({ id: 'u1', email: 'mama@correo.com' }), salir },
@@ -81,5 +91,18 @@ describe('Shell', () => {
     await fixture.whenStable();
     expect(salir).toHaveBeenCalledOnce();
     expect(navegar).toHaveBeenCalledWith('/entrar');
+  });
+
+  it('la pestaña Súper muestra cuántas cosas hay por comprar', async () => {
+    await crear('Mamá');
+    expect(raiz().querySelector('.insignia')).toBeNull();
+
+    inventario.productos.set([producto({ cantidad: 0, minimo: 1 })]);
+    lista.items.set([item({ id: 1 }), item({ id: 2, comprado: true })]);
+    await fixture.whenStable();
+
+    const super_ = raiz().querySelector('a[href="/lista"]')!;
+    expect(super_.querySelector('.insignia')?.textContent?.trim()).toBe('2');
+    expect(super_.textContent).toContain('2 por comprar');
   });
 });

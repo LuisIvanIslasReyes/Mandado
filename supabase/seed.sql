@@ -5,6 +5,10 @@
 -- la cuenta desde Mailpit: http://127.0.0.1:54324
 insert into public.miembros_familia (email) values ('dev@mandado.test');
 
+-- Correo para probar desde el teléfono (`pnpm start:lan`). El código llega a
+-- Mailpit, que también se abre desde el teléfono: http://<IP-de-la-compu>:54324
+insert into public.miembros_familia (email) values ('telefono@mandado.test');
+
 -- Productos de ejemplo para ver el inventario con datos (fechas relativas a hoy).
 insert into public.productos (nombre, marca, categoria_id, ubicacion_id, unidad, cantidad, minimo, caduca_el)
 select p.nombre, p.marca, c.id, u.id, p.unidad::public.unidad_medida, p.cantidad, p.minimo, p.caduca_el
@@ -22,3 +26,6 @@ from (values
 ) as p(nombre, marca, categoria, ubicacion, unidad, cantidad, minimo, caduca_el)
 join public.categorias c on c.nombre = p.categoria
 join public.ubicaciones u on u.nombre = p.ubicacion;
+
+-- Cosas agregadas a mano a la lista del súper.
+insert into public.lista_manual (texto) values ('Carbón para la carne asada'), ('Pilas AA');

@@ -52,6 +52,24 @@ export class InventarioStore {
   readonly nombreCategoria = computed(() => mapaNombres(this.categorias()));
   readonly nombreUbicacion = computed(() => mapaNombres(this.ubicaciones()));
 
+  /**
+   * Lo que hay que comprar porque ya llegó a su mínimo (igual que la vista
+   * `lista_super`), ordenado por categoría para recorrer el súper por pasillos.
+   */
+  readonly porComprar = computed(() => {
+    const categorias = this.nombreCategoria();
+    const categoria = (p: Producto) => (p.categoria_id && categorias.get(p.categoria_id)) || null;
+    return this.productos()
+      .filter((p) => p.minimo > 0 && p.cantidad <= p.minimo)
+      .sort((a, b) => {
+        const ca = categoria(a);
+        const cb = categoria(b);
+        // Lo que no tiene categoría va al final.
+        if (ca !== cb) return ca === null ? 1 : cb === null ? -1 : ca.localeCompare(cb, 'es');
+        return a.nombre.localeCompare(b.nombre, 'es');
+      });
+  });
+
   private canal: RealtimeChannel | null = null;
   private recargaPendiente?: ReturnType<typeof setTimeout>;
 

@@ -1,0 +1,151 @@
+<div class="pagina">
+  <header class="pagina-encabezado">
+    <h1>Lista del súper</h1>
+    <p>Lo que falta comprar.</p>
+  </header>
+
+  @switch (estado()) {
+    @case ('error') {
+      <div class="mensaje mensaje-error estado-error" role="alert">
+        <p>No se pudo cargar la lista. Revisa tu internet.</p>
+        <button type="button" class="boton boton-secundario" (click)="reintentar()">
+          Reintentar
+        </button>
+      </div>
+    }
+    @case ('cargando') {
+      <p class="cargando" aria-busy="true">Cargando la lista…</p>
+    }
+    @default {
+      <form class="agregar" (submit)="agregar($event)">
+        <label class="solo-lectores" for="nuevo">Agregar algo a la lista</label>
+        <input
+          id="nuevo"
+          class="campo-entrada"
+          type="text"
+          autocomplete="off"
+          autocapitalize="sentences"
+          enterkeyhint="done"
+          maxlength="120"
+          placeholder="Agregar algo, ej. carbón"
+          [value]="nuevo()"
+          (input)="nuevo.set($any($event.target).value)"
+        />
+        <button
+          type="submit"
+          class="boton boton-primario"
+          [attr.aria-busy]="agregando()"
+          [attr.aria-disabled]="!nuevo().trim()"
+        >
+          <app-icono class="icono-boton" nombre="mas" />
+          Agregar
+        </button>
+      </form>
+
+      @if (vacia()) {
+        <app-vacio
+          icono="carrito"
+          titulo="No falta nada por ahora"
+          texto="Lo que llegue a su mínimo en el inventario aparece aquí solo. También puedes agregar cosas a mano."
+        />
+      }
+
+      @if (inventario.porComprar().length) {
+        <section class="seccion" aria-labelledby="titulo-acabando">
+          <h2 id="titulo-acabando">
+            Se está acabando <span class="conteo">{{ inventario.porComprar().length }}</span>
+          </h2>
+          <ul class="items">
+            @for (p of inventario.porComprar(); track p.id) {
+              <li class="item">
+                <button type="button" class="item-boton" (click)="abrirCompra(p)">
+                  <span class="check" aria-hidden="true"></span>
+                  <span class="item-texto">
+                    <span class="solo-lectores">Registrar compra de</span>
+                    <span class="item-nombre">
+                      {{ p.nombre }}
+                      @if (p.marca) {
+                        <span class="item-marca">{{ p.marca }}</span>
+                      }
+                    </span>
+                    <span class="item-detalle" [class.item-agotado]="p.cantidad <= 0">{{
+                      detalle(p)
+                    }}</span>
+                  </span>
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (lista.pendientes().length) {
+        <section class="seccion" aria-labelledby="titulo-manual">
+          <h2 id="titulo-manual">
+            También comprar <span class="conteo">{{ lista.pendientes().length }}</span>
+          </h2>
+          <ul class="items">
+            @for (item of lista.pendientes(); track item.id) {
+              <li class="item">
+                <input
+                  type="checkbox"
+                  class="check"
+                  [id]="'item-' + item.id"
+                  [checked]="false"
+                  (change)="marcar(item, true)"
+                />
+                <label class="item-texto" [for]="'item-' + item.id">
+                  <span class="item-nombre">{{ item.texto }}</span>
+                  <span class="item-detalle">{{ quienAgrego(item) }}</span>
+                </label>
+                <button
+                  type="button"
+                  class="quitar"
+                  [attr.aria-label]="'Quitar ' + item.texto + ' de la lista'"
+                  (click)="quitar(item)"
+                >
+                  <app-icono nombre="cerrar" />
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+
+      @if (lista.comprados().length) {
+        <section class="seccion" aria-labelledby="titulo-carrito">
+          <div class="seccion-encabezado">
+            <h2 id="titulo-carrito">
+              En el carrito <span class="conteo">{{ lista.comprados().length }}</span>
+            </h2>
+            <button type="button" class="boton boton-texto" (click)="quitarComprados()">
+              Quitar de la lista
+            </button>
+          </div>
+          <ul class="items items-comprados">
+            @for (item of lista.comprados(); track item.id) {
+              <li class="item">
+                <input
+                  type="checkbox"
+                  class="check"
+                  [id]="'item-' + item.id"
+                  [checked]="true"
+                  (change)="marcar(item, false)"
+                />
+                <label class="item-texto" [for]="'item-' + item.id">
+                  <span class="item-nombre">{{ item.texto }}</span>
+                </label>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    }
+  }
+</div>
+
+@if (comprando(); as producto) {
+  <app-dialogo titulo="Lo compré" [subtitulo]="producto.nombre" (cerrado)="cerrarCompra()">
+    <app-comprar [producto]="producto" (listo)="cerrarCompra()" />
+  </app-dialogo>
+}

@@ -39,6 +39,9 @@ export class InventarioFalso {
   readonly nombreUbicacion = computed(
     () => new Map(this.ubicaciones().map((c) => [c.id, c.nombre])),
   );
+  readonly porComprar = computed(() =>
+    this.productos().filter((p) => p.minimo > 0 && p.cantidad <= p.minimo),
+  );
   historial: Movimiento[] = [];
 
   async iniciar(): Promise<void> {}

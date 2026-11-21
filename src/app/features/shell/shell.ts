@@ -2,6 +2,8 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
 import { Avisos } from '../../shared/avisos';
+import { InventarioStore } from '../../core/inventario.store';
+import { ListaStore } from '../../core/lista.store';
 import { SupabaseService } from '../../core/supabase.service';
 import { Icono, NombreIcono } from '../../shared/icono';
 import { Marca } from '../../shared/marca';
@@ -28,6 +30,13 @@ export class Shell {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
   protected readonly avisos = inject(Avisos);
+  private readonly inventario = inject(InventarioStore);
+  private readonly lista = inject(ListaStore);
+
+  /** Lo que falta comprar: lo que se está acabando + lo agregado a mano. */
+  protected readonly pendientes = computed(
+    () => this.inventario.porComprar().length + this.lista.pendientes().length,
+  );
 
   protected readonly secciones: Seccion[] = [
     { ruta: '/inventario', etiqueta: 'Inventario', icono: 'inventario' },
@@ -44,6 +53,9 @@ export class Shell {
 
   constructor() {
     void this.cargarNombre();
+    // Se cargan aquí para que el contador de la pestaña Súper sirva en cualquier sección.
+    void this.inventario.iniciar();
+    void this.lista.iniciar();
   }
 
   private async cargarNombre(): Promise<void> {

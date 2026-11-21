@@ -76,7 +76,8 @@ export class AuthService {
   }
 
   async salir(): Promise<void> {
-    await this.supabase.auth.signOut();
+    // Solo en este dispositivo: salir en el celular no debe sacar a nadie de la compu.
+    await this.supabase.auth.signOut({ scope: 'local' });
     // SIGNED_OUT también limpia y redirige; esto evita esperar al callback.
     this._sesion.set(null);
     this._esFamilia.set(null);

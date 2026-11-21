@@ -1,0 +1,223 @@
+.icono-boton {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.cargando {
+  color: var(--color-texto-suave);
+}
+
+.estado-error {
+  display: grid;
+  justify-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-8) var(--espacio-4);
+  text-align: center;
+}
+
+// ===== Agregar =====
+.agregar {
+  display: flex;
+  gap: var(--espacio-2);
+
+  .campo-entrada {
+    flex: 1;
+    min-width: 0;
+  }
+
+  [aria-disabled='true'] {
+    opacity: 0.6;
+  }
+}
+
+// ===== Secciones =====
+.seccion {
+  display: grid;
+  gap: var(--espacio-3);
+
+  h2 {
+    display: flex;
+    align-items: center;
+    gap: var(--espacio-2);
+    font-size: var(--texto-base);
+  }
+}
+
+.seccion-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-2);
+}
+
+.conteo {
+  display: inline-grid;
+  place-items: center;
+  min-width: 1.5rem;
+  height: 1.5rem;
+  padding: 0 var(--espacio-2);
+  border-radius: 999px;
+  background: var(--color-primario-suave);
+  color: var(--color-sobre-primario-suave);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.items {
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: 3.5rem;
+  padding: var(--espacio-2) var(--espacio-2) var(--espacio-2) var(--espacio-4);
+
+  & + & {
+    border-top: 1px solid var(--color-borde);
+  }
+}
+
+.item-texto {
+  display: grid;
+  flex: 1;
+  gap: 0.125rem;
+  min-width: 0;
+  padding: var(--espacio-1) 0;
+  cursor: pointer;
+}
+
+.item-nombre {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.item-marca {
+  margin-left: var(--espacio-1);
+  color: var(--color-texto-suave);
+  font-weight: 400;
+}
+
+.item-detalle {
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+}
+
+.item-agotado {
+  color: var(--color-error);
+  font-weight: 500;
+}
+
+// Fila completa tocable (lo que se está acabando)
+.item:has(.item-boton) {
+  padding: 0;
+}
+
+.item-boton {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-width: 0;
+  min-height: 3.5rem;
+  padding: var(--espacio-2) var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-fondo);
+
+    .check {
+      border-color: var(--color-primario);
+    }
+  }
+}
+
+// ===== Círculo para marcar (botón o casilla) =====
+.check {
+  position: relative;
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  margin: 0;
+  padding: 0;
+  border: 2px solid var(--color-borde-campo);
+  border-radius: 50%;
+  background: var(--color-superficie);
+  appearance: none;
+  cursor: pointer;
+  transition:
+    background-color var(--transicion),
+    border-color var(--transicion);
+
+  // Área de toque de 44 px sin agrandar el círculo
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -0.5rem;
+  }
+
+  &:hover {
+    border-color: var(--color-primario);
+  }
+
+  &:checked {
+    border-color: var(--color-primario);
+    background: var(--color-primario);
+  }
+
+  // Palomita
+  &:checked::after {
+    content: '';
+    width: 0.4rem;
+    height: 0.75rem;
+    margin-top: -0.15rem;
+    border: solid var(--color-sobre-primario);
+    border-width: 0 2.5px 2.5px 0;
+    transform: rotate(45deg);
+  }
+}
+
+.items-comprados {
+  .item-nombre {
+    color: var(--color-texto-suave);
+    font-weight: 400;
+    text-decoration: line-through;
+  }
+}
+
+.quitar {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+
+  &:hover {
+    background: var(--color-fondo);
+    color: var(--color-error);
+  }
+
+  app-icono {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+}

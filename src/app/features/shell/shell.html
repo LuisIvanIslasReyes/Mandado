@@ -36,8 +36,16 @@
         routerLinkActive="activa"
         ariaCurrentWhenActive="page"
       >
-        <span class="enlace-icono"><app-icono [nombre]="seccion.icono" /></span>
+        <span class="enlace-icono">
+          <app-icono [nombre]="seccion.icono" />
+          @if (seccion.ruta === '/lista' && pendientes()) {
+            <span class="insignia" aria-hidden="true">{{ pendientes() }}</span>
+          }
+        </span>
         <span>{{ seccion.etiqueta }}</span>
+        @if (seccion.ruta === '/lista' && pendientes()) {
+          <span class="solo-lectores">, {{ pendientes() }} por comprar</span>
+        }
       </a>
     }
   </nav>
