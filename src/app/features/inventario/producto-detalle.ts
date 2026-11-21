@@ -105,7 +105,8 @@ export class ProductoDetalle implements OnInit {
   protected describir(m: Movimiento): { titulo: string; detalle: string } {
     const p = this.producto();
     const tipo = TIPOS_MOVIMIENTO.find((t) => t.valor === m.tipo)!;
-    const partes = [this.store.nombrePersona(m.usuario_id), formatoMomento(m.created_at)];
+    const quien = this.store.esYo(m.usuario_id) ? 'Tú' : this.store.nombrePersona(m.usuario_id);
+    const partes = [quien, formatoMomento(m.created_at)];
     if (m.precio !== null) partes.push(formatoDinero(m.precio));
     return {
       titulo: `${SIGNO[m.tipo]} ${formatoCantidad(m.cantidad, p.unidad)} · ${tipo.etiqueta}`,

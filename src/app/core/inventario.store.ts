@@ -54,6 +54,12 @@ export class InventarioStore {
   readonly nombreCategoria = computed(() => mapaNombres(this.categorias()));
   readonly nombreUbicacion = computed(() => mapaNombres(this.ubicaciones()));
 
+  /** Mi nombre en la familia (null mientras carga). */
+  readonly miNombre = computed(() => {
+    const id = this.auth.usuario()?.id;
+    return (id && this.perfiles().get(id)) || null;
+  });
+
   /**
    * Lo que hay que comprar porque ya llegó a su mínimo (igual que la vista
    * `lista_super`), ordenado por categoría para recorrer el súper por pasillos.
@@ -111,6 +117,24 @@ export class InventarioStore {
 
   nombrePersona(usuarioId: string | null): string {
     return (usuarioId && this.perfiles().get(usuarioId)) || 'Alguien';
+  }
+
+  /** ¿Lo hizo quien está usando la app? Para decir "tú" en vez de su nombre. */
+  esYo(usuarioId: string | null): boolean {
+    return !!usuarioId && usuarioId === this.auth.usuario()?.id;
+  }
+
+  /** Cada quien elige cómo lo ve la familia ("Mamá", "Chata"). */
+  async cambiarMiNombre(nombre: string): Promise<string | null> {
+    const id = this.auth.usuario()?.id;
+    const limpio = nombre.trim().replace(/\s+/g, ' ');
+    if (!id) return 'Tu sesión terminó. Vuelve a entrar.';
+    if (!limpio) return 'Escribe un nombre.';
+    if (limpio.length > 30) return 'Usa 30 letras o menos.';
+    const { error } = await this.supabase.from('perfiles').update({ nombre: limpio }).eq('id', id);
+    if (error) return mensajeDeError(error);
+    this.perfiles.update((mapa) => new Map(mapa).set(id, limpio));
+    return null;
   }
 
   async crear(datos: DatosProducto, cantidadInicial: number): Promise<string | null> {

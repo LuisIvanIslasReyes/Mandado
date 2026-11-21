@@ -3,7 +3,7 @@
 
 -- Correo de prueba con acceso. Regístrate con él en la app local y confirma
 -- la cuenta desde Mailpit: http://127.0.0.1:54324
-insert into public.miembros_familia (email) values ('dev@mandado.test');
+insert into public.miembros_familia (email, apodo) values ('dev@mandado.test', 'Dev');
 
 -- Correo para probar desde el teléfono (`pnpm start:lan`). El código llega a
 -- Mailpit, que también se abre desde el teléfono: http://<IP-de-la-compu>:54324

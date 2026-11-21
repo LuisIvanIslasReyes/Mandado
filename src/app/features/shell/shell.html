@@ -20,10 +20,51 @@
     </button>
 
     <div id="menu-cuenta" popover class="menu-cuenta">
-      <div class="menu-usuario">
-        <p class="menu-nombre">{{ nombre() || 'Tu cuenta' }}</p>
-        <p class="menu-correo">{{ correo() }}</p>
-      </div>
+      @if (!editandoNombre()) {
+        <div class="menu-usuario">
+          <p class="menu-nombre">{{ nombre() || 'Tu cuenta' }}</p>
+          <p class="menu-correo">{{ correo() }}</p>
+        </div>
+        <button type="button" class="boton boton-texto boton-cambiar" (click)="editarNombre()">
+          <app-icono class="icono-boton" nombre="editar" />
+          Cambiar mi nombre
+        </button>
+      } @else {
+        <form class="form-nombre" (submit)="guardarNombre($event)" novalidate>
+          <div class="campo">
+            <label class="campo-etiqueta" for="mi-nombre">¿Cómo te dice la familia?</label>
+            <input
+              #campoNombre
+              id="mi-nombre"
+              class="campo-entrada"
+              type="text"
+              autocomplete="nickname"
+              autocapitalize="words"
+              maxlength="30"
+              placeholder="Ej. Mamá, Chata, Tío Beto"
+              [value]="nombreNuevo()"
+              (input)="nombreNuevo.set($any($event.target).value)"
+              [attr.aria-invalid]="errorNombre() ? 'true' : null"
+              [attr.aria-describedby]="errorNombre() ? 'mi-nombre-error' : 'mi-nombre-ayuda'"
+            />
+            @if (errorNombre(); as mensaje) {
+              <p id="mi-nombre-error" class="campo-error">{{ mensaje }}</p>
+            } @else {
+              <p id="mi-nombre-ayuda" class="campo-ayuda">
+                Así aparecerás en la lista y en el historial.
+              </p>
+            }
+          </div>
+          <div class="form-nombre-botones">
+            <button type="button" class="boton boton-secundario" (click)="cancelarNombre()">
+              Cancelar
+            </button>
+            <button type="submit" class="boton boton-primario" [attr.aria-busy]="guardandoNombre()">
+              Guardar
+            </button>
+          </div>
+        </form>
+      }
       <button
         type="button"
         class="boton boton-secundario boton-ancho"

@@ -2,7 +2,6 @@ import { signal } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router, provideRouter } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
-import { SupabaseService } from '../../core/supabase.service';
 import { InventarioStore } from '../../core/inventario.store';
 import { ListaStore } from '../../core/lista.store';
 import { InventarioFalso, enDias, producto } from '../../../testing/inventario-falso';
@@ -20,7 +19,7 @@ describe('Shell', () => {
     salir = vi.fn().mockResolvedValue(undefined);
     inventario = new InventarioFalso();
     lista = new ListaFalsa();
-    const perfil = { data: nombre ? { nombre } : null };
+    inventario.miNombre.set(nombre);
     await TestBed.configureTestingModule({
       imports: [Shell],
       providers: [
@@ -30,16 +29,6 @@ describe('Shell', () => {
         {
           provide: AuthService,
           useValue: { usuario: signal({ id: 'u1', email: 'mama@correo.com' }), salir },
-        },
-        {
-          provide: SupabaseService,
-          useValue: {
-            client: {
-              from: () => ({
-                select: () => ({ eq: () => ({ maybeSingle: async () => perfil }) }),
-              }),
-            },
-          },
         },
       ],
     }).compileComponents();
@@ -138,5 +127,38 @@ describe('Shell', () => {
     await fixture.whenStable();
     expect(fecha.getAttribute('datetime')).toBe('2026-11-21');
     expect(fecha.querySelector('.hoy-dia')?.textContent).toBe('Sábado');
+  });
+
+  it('cada quien cambia su nombre desde el menú', async () => {
+    await crear('Luis');
+    const cambiar = vi.spyOn(inventario, 'cambiarMiNombre');
+    const boton = (texto: string) =>
+      [...raiz().querySelectorAll('button')].find((b) => b.textContent?.includes(texto))!;
+
+    boton('Cambiar mi nombre').click();
+    await fixture.whenStable();
+    const campo = raiz().querySelector('#mi-nombre') as HTMLInputElement;
+    expect(campo.value).toBe('Luis');
+
+    campo.value = 'Chata';
+    campo.dispatchEvent(new Event('input'));
+    raiz().querySelector('.form-nombre')!.dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+
+    expect(cambiar).toHaveBeenCalledWith('Chata');
+    expect(raiz().querySelector('.menu-nombre')?.textContent).toBe('Chata');
+    expect(raiz().querySelector('.avatar')?.textContent?.trim()).toBe('C');
+  });
+
+  it('muestra el error si el nombre no sirve', async () => {
+    await crear('Luis');
+    vi.spyOn(inventario, 'cambiarMiNombre').mockResolvedValue('Escribe un nombre.');
+    [...raiz().querySelectorAll('button')]
+      .find((b) => b.textContent?.includes('Cambiar mi nombre'))!
+      .click();
+    await fixture.whenStable();
+    raiz().querySelector('.form-nombre')!.dispatchEvent(new Event('submit'));
+    await fixture.whenStable();
+    expect(raiz().querySelector('#mi-nombre-error')?.textContent).toBe('Escribe un nombre.');
   });
 });

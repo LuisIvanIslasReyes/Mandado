@@ -54,8 +54,20 @@ export class InventarioFalso {
 
   async iniciar(): Promise<void> {}
 
+  readonly miNombre = signal<string | null>('Luis');
+
   nombrePersona(id: string | null): string {
-    return id === 'u1' ? 'Mamá' : 'Alguien';
+    return id === 'u1' ? 'Mamá' : id === 'yo' ? 'Luis' : 'Alguien';
+  }
+
+  /** En las pruebas, "yo" soy el usuario con id 'yo'. */
+  esYo(id: string | null): boolean {
+    return id === 'yo';
+  }
+
+  async cambiarMiNombre(nombre: string): Promise<string | null> {
+    this.miNombre.set(nombre.trim());
+    return null;
   }
 
   async crear(_datos: DatosProducto, _cantidad: number): Promise<string | null> {

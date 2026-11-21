@@ -64,7 +64,9 @@ export class Lista {
   }
 
   protected quienAgrego(item: ItemManual): string {
-    return `Lo agregó ${this.inventario.nombrePersona(item.usuario_id)}`;
+    return this.inventario.esYo(item.usuario_id)
+      ? 'Lo agregaste tú'
+      : `Lo agregó ${this.inventario.nombrePersona(item.usuario_id)}`;
   }
 
   protected async agregar(evento: Event): Promise<void> {

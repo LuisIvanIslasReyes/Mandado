@@ -59,6 +59,14 @@ describe('Lista', () => {
     expect(nombres('titulo-carrito')).toEqual(['Servilletas']);
   });
 
+  it('lo que agregué yo dice "Lo agregaste tú"', async () => {
+    await crear();
+    lista.items.update((l) => [...l, item({ id: 12, texto: 'Pilas', usuario_id: 'yo' })]);
+    await fixture.whenStable();
+    const pilas = [...seccion('titulo-manual')!.querySelectorAll('.item')].at(-1)!;
+    expect(pilas.textContent).toContain('Lo agregaste tú');
+  });
+
   it('agrega algo a mano y limpia el campo', async () => {
     await crear();
     const agregar = vi.spyOn(lista, 'agregar');

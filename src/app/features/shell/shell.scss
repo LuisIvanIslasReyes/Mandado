@@ -131,6 +131,23 @@ $alto-pestanas: 4rem;
   white-space: nowrap;
 }
 
+.boton-cambiar {
+  justify-self: start;
+  margin: calc(var(--espacio-2) * -1) 0 calc(var(--espacio-2) * -1) calc(var(--espacio-2) * -1);
+  text-decoration: none;
+}
+
+.form-nombre {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.form-nombre-botones {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--espacio-2);
+}
+
 .icono-boton {
   width: 1.125rem;
   height: 1.125rem;
