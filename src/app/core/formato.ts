@@ -50,6 +50,12 @@ export function nombreUnidad(unidad: Unidad, plural = true): string {
   return NOMBRES_UNIDAD[unidad][plural ? 1 : 0];
 }
 
+/** Aviso tras un movimiento: "Leche: queda 1 litro", "Arroz: quedan 2 kg", "Yogur: se acabó". */
+export function textoQueda(nombre: string, cantidad: number, unidad: Unidad): string {
+  if (cantidad <= 0) return `${nombre}: se acabó`;
+  return `${nombre}: ${cantidad === 1 ? 'queda' : 'quedan'} ${formatoCantidad(cantidad, unidad)}`;
+}
+
 export function formatoDinero(valor: number): string {
   return dinero.format(valor);
 }

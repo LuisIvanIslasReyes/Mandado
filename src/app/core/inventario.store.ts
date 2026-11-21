@@ -2,7 +2,7 @@ import { Injectable, computed, effect, inject, signal, untracked } from '@angula
 import type { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import type { Tables, TablesInsert, TablesUpdate } from './database.types';
-import { TipoMovimiento, aplicarMovimiento } from './formato';
+import { TipoMovimiento, aplicarMovimiento, diasHasta } from './formato';
 import { SupabaseService } from './supabase.service';
 
 const COLUMNAS_PRODUCTO =
@@ -69,6 +69,23 @@ export class InventarioStore {
         return a.nombre.localeCompare(b.nombre, 'es');
       });
   });
+
+  /**
+   * Lo que caduca en los próximos 7 días o ya caducó (y todavía hay), de lo
+   * más urgente a lo menos. Se calcula con la fecha local del celular, no con
+   * la de la base (que está en UTC y en México ya es "mañana" desde la tarde).
+   */
+  readonly porCaducar = computed(() => {
+    const hoy = new Date();
+    return this.productos()
+      .filter((p) => p.caduca_el && p.cantidad > 0)
+      .map((producto) => ({ producto, dias: diasHasta(producto.caduca_el!, hoy) }))
+      .filter((x) => x.dias <= 7)
+      .sort((a, b) => a.dias - b.dias || a.producto.nombre.localeCompare(b.producto.nombre, 'es'));
+  });
+
+  /** Lo urgente: ya caducó o caduca en 3 días o menos. */
+  readonly urgentesPorCaducar = computed(() => this.porCaducar().filter((x) => x.dias <= 3).length);
 
   private canal: RealtimeChannel | null = null;
   private recargaPendiente?: ReturnType<typeof setTimeout>;

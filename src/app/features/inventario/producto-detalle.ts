@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  OnInit,
   computed,
   effect,
   inject,
@@ -20,6 +21,7 @@ import {
   formatoDinero,
   formatoMomento,
   nombreUnidad,
+  textoQueda,
 } from '../../core/formato';
 import { InventarioStore, Movimiento, Producto } from '../../core/inventario.store';
 import { Avisos } from '../../shared/avisos';
@@ -39,8 +41,11 @@ const SIGNO: Record<TipoMovimiento, string> = {
   styleUrl: './producto-detalle.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ProductoDetalle {
+export class ProductoDetalle implements OnInit {
   readonly producto = input.required<Producto>();
+  /** Para abrir ya listo, p. ej. "Se echó a perder" con todo lo que hay. */
+  readonly tipoInicial = input<TipoMovimiento>('consumo');
+  readonly cantidadInicial = input<number | null>(null);
   /** Se registró un movimiento: el padre cierra la ventana. */
   readonly listo = output<void>();
   readonly editar = output<void>();
@@ -91,6 +96,10 @@ export class ProductoDetalle {
     });
   }
 
+  ngOnInit(): void {
+    this.form.patchValue({ tipo: this.tipoInicial(), cantidad: this.cantidadInicial() });
+  }
+
   protected describir(m: Movimiento): { titulo: string; detalle: string } {
     const p = this.producto();
     const tipo = TIPOS_MOVIMIENTO.find((t) => t.valor === m.tipo)!;
@@ -130,8 +139,7 @@ export class ProductoDetalle {
     }
 
     const actual = this.store.productos().find((x) => x.id === p.id) ?? p;
-    const queda = actual.cantidad === 1 ? 'queda' : 'quedan';
-    this.avisos.exito(`${p.nombre}: ${queda} ${formatoCantidad(actual.cantidad, actual.unidad)}`);
+    this.avisos.exito(textoQueda(p.nombre, actual.cantidad, actual.unidad));
     this.listo.emit();
   }
 

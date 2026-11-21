@@ -12,6 +12,8 @@ interface Seccion {
   ruta: string;
   etiqueta: string;
   icono: NombreIcono;
+  /** Qué cuenta el número de la pestaña, para lectores de pantalla. */
+  insignia?: string;
 }
 
 /**
@@ -38,10 +40,22 @@ export class Shell {
     () => this.inventario.porComprar().length + this.lista.pendientes().length,
   );
 
+  /** Número sobre el ícono de cada pestaña (0 = sin número). */
+  protected insignia(ruta: string): number {
+    if (ruta === '/lista') return this.pendientes();
+    if (ruta === '/por-caducar') return this.inventario.urgentesPorCaducar();
+    return 0;
+  }
+
   protected readonly secciones: Seccion[] = [
     { ruta: '/inventario', etiqueta: 'Inventario', icono: 'inventario' },
-    { ruta: '/lista', etiqueta: 'Súper', icono: 'carrito' },
-    { ruta: '/por-caducar', etiqueta: 'Por caducar', icono: 'caducidad' },
+    { ruta: '/lista', etiqueta: 'Súper', icono: 'carrito', insignia: 'por comprar' },
+    {
+      ruta: '/por-caducar',
+      etiqueta: 'Por caducar',
+      icono: 'caducidad',
+      insignia: 'urgentes',
+    },
   ];
 
   protected readonly nombre = signal<string | null>(null);

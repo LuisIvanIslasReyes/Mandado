@@ -7,6 +7,7 @@ import {
   formatoMomento,
   normalizar,
   pasoRapido,
+  textoQueda,
 } from './formato';
 
 // 21 de noviembre de 2026, 10:00 hora local
@@ -88,5 +89,13 @@ describe('formatoMomento', () => {
 describe('normalizar', () => {
   it('ignora acentos, mayúsculas y espacios de los lados', () => {
     expect(normalizar('  Jabón PARA Trastes ')).toBe('jabon para trastes');
+  });
+});
+
+describe('textoQueda', () => {
+  it('singular, plural y "se acabó"', () => {
+    expect(textoQueda('Leche', 1, 'litro')).toBe('Leche: queda 1 litro');
+    expect(textoQueda('Arroz', 2.5, 'kg')).toBe('Arroz: quedan 2.5 kg');
+    expect(textoQueda('Yogur', 0, 'ml')).toBe('Yogur: se acabó');
   });
 });

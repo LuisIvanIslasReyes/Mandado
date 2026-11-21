@@ -1,0 +1,89 @@
+<div class="pagina">
+  <header class="pagina-encabezado">
+    <h1>Por caducar</h1>
+    <p>Lo que vence pronto, para usarlo antes de que se eche a perder.</p>
+  </header>
+
+  @switch (store.estado()) {
+    @case ('error') {
+      <div class="mensaje mensaje-error estado-error" role="alert">
+        <p>No se pudo cargar el inventario. Revisa tu internet.</p>
+        <button type="button" class="boton boton-secundario" (click)="store.iniciar()">
+          Reintentar
+        </button>
+      </div>
+    }
+    @case ('listo') {
+      @for (seccion of secciones(); track seccion.id) {
+        <section class="seccion" [attr.aria-labelledby]="'titulo-' + seccion.id">
+          <div class="seccion-encabezado">
+            <h2 [id]="'titulo-' + seccion.id">
+              {{ seccion.titulo }}
+              <span class="conteo" [class]="'conteo-' + seccion.id">{{
+                seccion.filas.length
+              }}</span>
+            </h2>
+            @if (seccion.ayuda) {
+              <p>{{ seccion.ayuda }}</p>
+            }
+          </div>
+          <ul class="items">
+            @for (fila of seccion.filas; track fila.producto.id) {
+              <li>
+                <button
+                  type="button"
+                  class="item"
+                  (click)="abrir({ tipo: 'detalle', id: fila.producto.id })"
+                >
+                  <span class="item-texto">
+                    <span class="item-nombre">
+                      {{ fila.producto.nombre }}
+                      @if (fila.producto.marca) {
+                        <span class="item-marca">{{ fila.producto.marca }}</span>
+                      }
+                    </span>
+                    <span class="item-detalle">{{ fila.detalle }}</span>
+                  </span>
+                  <span
+                    class="etiqueta"
+                    [class.etiqueta-alerta]="fila.dias < 0"
+                    [class.etiqueta-aviso]="fila.dias >= 0 && fila.dias <= 3"
+                    [class.etiqueta-neutra]="fila.dias > 3"
+                    >{{ fila.cuando }}</span
+                  >
+                </button>
+              </li>
+            }
+          </ul>
+        </section>
+      } @empty {
+        <app-vacio
+          icono="caducidad"
+          titulo="Nada por caducar esta semana"
+          texto="Cuando algo esté por vencer aparece aquí. Agrega la fecha de caducidad a tus productos en el inventario."
+        />
+      }
+    }
+    @default {
+      <p class="cargando" aria-busy="true">Cargando…</p>
+    }
+  }
+</div>
+
+@if (abierto(); as producto) {
+  @if (ventana()?.tipo === 'editar') {
+    <app-dialogo titulo="Editar producto" [subtitulo]="producto.nombre" (cerrado)="cerrar()">
+      <app-producto-form [producto]="producto" (listo)="cerrar()" />
+    </app-dialogo>
+  } @else {
+    <app-dialogo [titulo]="producto.nombre" [subtitulo]="producto.marca" (cerrado)="cerrar()">
+      <app-producto-detalle
+        [producto]="producto"
+        [tipoInicial]="abiertoVencido() ? 'merma' : 'consumo'"
+        [cantidadInicial]="abiertoVencido() ? producto.cantidad : null"
+        (listo)="cerrar()"
+        (editar)="abrir({ tipo: 'editar', id: producto.id })"
+      />
+    </app-dialogo>
+  }
+}

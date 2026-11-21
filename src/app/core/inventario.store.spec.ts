@@ -1,7 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
-import { producto } from '../../testing/inventario-falso';
+import { enDias, producto } from '../../testing/inventario-falso';
 import { AuthService } from './auth.service';
 import { InventarioStore, mensajeDeError } from './inventario.store';
 import { SupabaseService } from './supabase.service';
@@ -46,6 +46,37 @@ describe('InventarioStore.porComprar', () => {
       producto({ id: 2, nombre: 'Sal', cantidad: 0, minimo: 0 }),
     ]);
     expect(store.porComprar()).toEqual([]);
+  });
+});
+
+describe('InventarioStore.porCaducar', () => {
+  function crear() {
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter([]),
+        { provide: SupabaseService, useValue: { client: {} } },
+        { provide: AuthService, useValue: { usuario: signal({ id: 'u1' }) } },
+      ],
+    });
+    return TestBed.inject(InventarioStore);
+  }
+
+  it('lo de los próximos 7 días o ya caducado, de lo más urgente a lo menos', () => {
+    const store = crear();
+    store.productos.set([
+      producto({ id: 1, nombre: 'Pollo', caduca_el: enDias(6) }),
+      producto({ id: 2, nombre: 'Yogur', caduca_el: enDias(-1) }),
+      producto({ id: 3, nombre: 'Queso', caduca_el: enDias(1) }),
+      producto({ id: 4, nombre: 'Arroz', caduca_el: enDias(30) }),
+      producto({ id: 5, nombre: 'Crema', caduca_el: enDias(0), cantidad: 0 }),
+      producto({ id: 6, nombre: 'Sal', caduca_el: null }),
+    ]);
+    expect(store.porCaducar().map((x) => [x.producto.nombre, x.dias])).toEqual([
+      ['Yogur', -1],
+      ['Queso', 1],
+      ['Pollo', 6],
+    ]);
+    expect(store.urgentesPorCaducar()).toBe(2);
   });
 });
 

@@ -14,6 +14,7 @@ import {
   formatoCantidad,
   normalizar,
   pasoRapido,
+  textoQueda,
 } from '../../core/formato';
 import { InventarioStore, Producto } from '../../core/inventario.store';
 import { Avisos } from '../../shared/avisos';
@@ -142,10 +143,7 @@ export class Inventario {
     }
     const actual = this.store.productos().find((p) => p.id === producto.id);
     if (actual) {
-      const queda = actual.cantidad === 1 ? 'queda' : 'quedan';
-      this.avisos.exito(
-        `${actual.nombre}: ${queda} ${formatoCantidad(actual.cantidad, actual.unidad)}`,
-      );
+      this.avisos.exito(textoQueda(actual.nombre, actual.cantidad, actual.unidad));
     }
   }
 

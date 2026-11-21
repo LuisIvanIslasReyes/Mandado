@@ -38,13 +38,18 @@
       >
         <span class="enlace-icono">
           <app-icono [nombre]="seccion.icono" />
-          @if (seccion.ruta === '/lista' && pendientes()) {
-            <span class="insignia" aria-hidden="true">{{ pendientes() }}</span>
+          @if (insignia(seccion.ruta); as numero) {
+            <span
+              class="insignia"
+              [class.insignia-aviso]="seccion.ruta === '/por-caducar'"
+              aria-hidden="true"
+              >{{ numero }}</span
+            >
           }
         </span>
         <span>{{ seccion.etiqueta }}</span>
-        @if (seccion.ruta === '/lista' && pendientes()) {
-          <span class="solo-lectores">, {{ pendientes() }} por comprar</span>
+        @if (insignia(seccion.ruta); as numero) {
+          <span class="solo-lectores">, {{ numero }} {{ seccion.insignia }}</span>
         }
       </a>
     }

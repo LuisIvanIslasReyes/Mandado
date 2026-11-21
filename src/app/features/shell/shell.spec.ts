@@ -5,7 +5,7 @@ import { AuthService } from '../../core/auth.service';
 import { SupabaseService } from '../../core/supabase.service';
 import { InventarioStore } from '../../core/inventario.store';
 import { ListaStore } from '../../core/lista.store';
-import { InventarioFalso, producto } from '../../../testing/inventario-falso';
+import { InventarioFalso, enDias, producto } from '../../../testing/inventario-falso';
 import { ListaFalsa, item } from '../../../testing/lista-falsa';
 import { Shell } from './shell';
 
@@ -104,5 +104,18 @@ describe('Shell', () => {
     const super_ = raiz().querySelector('a[href="/lista"]')!;
     expect(super_.querySelector('.insignia')?.textContent?.trim()).toBe('2');
     expect(super_.textContent).toContain('2 por comprar');
+  });
+
+  it('la pestaña Por caducar cuenta lo urgente (3 días o menos, o ya caducado)', async () => {
+    await crear('Mamá');
+    inventario.productos.set([
+      producto({ id: 1, caduca_el: enDias(-2) }),
+      producto({ id: 2, caduca_el: enDias(2) }),
+      producto({ id: 3, caduca_el: enDias(6) }),
+    ]);
+    await fixture.whenStable();
+    const pestana = raiz().querySelector('a[href="/por-caducar"]')!;
+    expect(pestana.querySelector('.insignia-aviso')?.textContent?.trim()).toBe('2');
+    expect(pestana.textContent).toContain('2 urgentes');
   });
 });

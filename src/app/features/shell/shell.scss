@@ -170,6 +170,10 @@ $alto-pestanas: 4rem;
   line-height: 1;
 }
 
+.insignia-aviso {
+  background: var(--color-aviso);
+}
+
 // ===== Contenido =====
 .contenido {
   max-width: 48rem;
