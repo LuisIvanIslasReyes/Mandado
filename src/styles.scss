@@ -324,3 +324,22 @@ h3 {
   background: var(--color-primario-suave);
   color: var(--color-sobre-primario-suave);
 }
+
+// ===== Páginas dentro de la app =====
+.pagina {
+  display: grid;
+  gap: var(--espacio-6);
+}
+
+.pagina-encabezado {
+  display: grid;
+  gap: var(--espacio-1);
+
+  h1 {
+    font-size: var(--texto-xl);
+  }
+
+  p {
+    color: var(--color-texto-suave);
+  }
+}

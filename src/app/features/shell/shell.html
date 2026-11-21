@@ -1,0 +1,48 @@
+<div class="app">
+  <header class="barra">
+    <app-marca />
+
+    <button
+      type="button"
+      class="cuenta"
+      popovertarget="menu-cuenta"
+      [attr.aria-label]="'Tu cuenta: ' + (nombre() || correo())"
+    >
+      <span class="avatar" aria-hidden="true">{{ inicial() }}</span>
+    </button>
+
+    <div id="menu-cuenta" popover class="menu-cuenta">
+      <div class="menu-usuario">
+        <p class="menu-nombre">{{ nombre() || 'Tu cuenta' }}</p>
+        <p class="menu-correo">{{ correo() }}</p>
+      </div>
+      <button
+        type="button"
+        class="boton boton-secundario boton-ancho"
+        (click)="salir()"
+        [attr.aria-busy]="saliendo()"
+      >
+        <app-icono class="icono-boton" nombre="salir" />
+        Salir
+      </button>
+    </div>
+  </header>
+
+  <nav class="navegacion" aria-label="Secciones">
+    @for (seccion of secciones; track seccion.ruta) {
+      <a
+        class="enlace"
+        [routerLink]="seccion.ruta"
+        routerLinkActive="activa"
+        ariaCurrentWhenActive="page"
+      >
+        <span class="enlace-icono"><app-icono [nombre]="seccion.icono" /></span>
+        <span>{{ seccion.etiqueta }}</span>
+      </a>
+    }
+  </nav>
+
+  <main class="contenido">
+    <router-outlet />
+  </main>
+</div>

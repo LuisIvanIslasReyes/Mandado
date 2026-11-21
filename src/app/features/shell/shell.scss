@@ -1,0 +1,219 @@
+// Celular: barra arriba, contenido, pestañas fijas abajo.
+// Pantallas grandes (≥ 1024 px): pestañas como barra lateral.
+
+$alto-barra: 3.5rem;
+$alto-pestanas: 4rem;
+
+.app {
+  min-height: 100dvh;
+}
+
+// ===== Barra superior =====
+.barra {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+  min-height: calc(#{$alto-barra} + env(safe-area-inset-top));
+  padding: env(safe-area-inset-top) max(var(--espacio-4), env(safe-area-inset-right)) 0
+    max(var(--espacio-4), env(safe-area-inset-left));
+  border-bottom: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+}
+
+.cuenta {
+  display: grid;
+  place-items: center;
+  width: 2.75rem; // 44 px
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 50%;
+  background: var(--color-primario);
+  color: var(--color-sobre-primario);
+  font-weight: 700;
+  transition: background-color var(--transicion);
+
+  .cuenta:hover & {
+    background: var(--color-primario-hover);
+  }
+}
+
+// Menú de la cuenta (popover nativo: se cierra con Esc o tocando fuera)
+.menu-cuenta {
+  position: fixed;
+  inset: auto;
+  top: calc(#{$alto-barra} + env(safe-area-inset-top) + var(--espacio-2));
+  right: max(var(--espacio-4), env(safe-area-inset-right));
+  width: min(18rem, calc(100vw - 2 * var(--espacio-4)));
+  margin: 0;
+  padding: var(--espacio-4);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+  color: var(--color-texto);
+
+  &:popover-open {
+    display: grid;
+    gap: var(--espacio-4);
+  }
+}
+
+.menu-usuario {
+  min-width: 0;
+}
+
+.menu-nombre {
+  font-weight: 600;
+}
+
+.menu-correo {
+  overflow: hidden;
+  color: var(--color-texto-suave);
+  font-size: var(--texto-sm);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icono-boton {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+// ===== Pestañas =====
+.navegacion {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  border-top: 1px solid var(--color-borde);
+  background: var(--color-superficie);
+}
+
+.enlace {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-1);
+  min-height: $alto-pestanas;
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color var(--transicion);
+
+  &:hover {
+    color: var(--color-texto);
+  }
+
+  &:focus-visible {
+    outline-offset: -3px;
+  }
+}
+
+// Píldora detrás del ícono activo
+.enlace-icono {
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 2rem;
+  border-radius: 1rem;
+  transition: background-color var(--transicion);
+
+  app-icono {
+    width: 1.375rem;
+    height: 1.375rem;
+  }
+}
+
+.enlace.activa {
+  color: var(--color-primario);
+
+  .enlace-icono {
+    background: var(--color-primario-suave);
+  }
+}
+
+// ===== Contenido =====
+.contenido {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: var(--espacio-6) max(var(--espacio-4), env(safe-area-inset-right))
+    calc(#{$alto-pestanas} + env(safe-area-inset-bottom) + var(--espacio-6))
+    max(var(--espacio-4), env(safe-area-inset-left));
+}
+
+// ===== Pantallas grandes =====
+@media (min-width: 64rem) {
+  .app {
+    display: grid;
+    grid-template-columns: 15rem 1fr;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      'barra barra'
+      'nav contenido';
+  }
+
+  .barra {
+    grid-area: barra;
+  }
+
+  .navegacion {
+    grid-area: nav;
+    position: sticky;
+    top: $alto-barra;
+    display: flex;
+    flex-direction: column;
+    gap: var(--espacio-1);
+    height: calc(100dvh - #{$alto-barra});
+    padding: var(--espacio-4) var(--espacio-3);
+    border-top: 0;
+    border-right: 1px solid var(--color-borde);
+  }
+
+  .enlace {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: var(--espacio-3);
+    min-height: 2.75rem;
+    padding: 0 var(--espacio-3);
+    border-radius: var(--radio-sm);
+    font-size: var(--texto-base);
+  }
+
+  .enlace-icono {
+    width: auto;
+    height: auto;
+  }
+
+  .enlace.activa {
+    background: var(--color-primario-suave);
+    color: var(--color-sobre-primario-suave);
+
+    .enlace-icono {
+      background: none;
+    }
+  }
+
+  .contenido {
+    grid-area: contenido;
+    width: 100%;
+    padding: var(--espacio-8);
+  }
+}

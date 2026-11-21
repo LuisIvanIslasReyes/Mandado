@@ -15,10 +15,28 @@ export const routes: Routes = [
     loadComponent: () => import('./features/sin-acceso/sin-acceso').then((m) => m.SinAcceso),
   },
   {
+    // Todo lo de aquí abajo requiere sesión y ser de la familia.
     path: '',
-    title: 'Mandado',
     canActivate: [soloFamilia],
-    loadComponent: () => import('./features/inicio/inicio').then((m) => m.Inicio),
+    loadComponent: () => import('./features/shell/shell').then((m) => m.Shell),
+    children: [
+      { path: '', pathMatch: 'full', redirectTo: 'inventario' },
+      {
+        path: 'inventario',
+        title: 'Inventario · Mandado',
+        loadComponent: () => import('./features/inventario/inventario').then((m) => m.Inventario),
+      },
+      {
+        path: 'lista',
+        title: 'Lista del súper · Mandado',
+        loadComponent: () => import('./features/lista/lista').then((m) => m.Lista),
+      },
+      {
+        path: 'por-caducar',
+        title: 'Por caducar · Mandado',
+        loadComponent: () => import('./features/por-caducar/por-caducar').then((m) => m.PorCaducar),
+      },
+    ],
   },
   { path: '**', redirectTo: '' },
 ];
