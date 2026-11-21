@@ -4,6 +4,7 @@ import {
   estadoCaducidad,
   estadoStock,
   formatoCantidad,
+  formatoHoy,
   formatoMomento,
   normalizar,
   pasoRapido,
@@ -97,5 +98,17 @@ describe('textoQueda', () => {
     expect(textoQueda('Leche', 1, 'litro')).toBe('Leche: queda 1 litro');
     expect(textoQueda('Arroz', 2.5, 'kg')).toBe('Arroz: quedan 2.5 kg');
     expect(textoQueda('Yogur', 0, 'ml')).toBe('Yogur: se acabó');
+  });
+});
+
+describe('formatoHoy', () => {
+  it('día con mayúscula, fecha corta para celular y larga para pantallas anchas', () => {
+    expect(formatoHoy(new Date(2026, 10, 20))).toEqual({
+      dia: 'Viernes',
+      corta: '20 nov',
+      larga: '20 de noviembre',
+      iso: '2026-11-20',
+    });
+    expect(formatoHoy(new Date(2026, 8, 3)).corta).toBe('3 sep');
   });
 });

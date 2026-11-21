@@ -7,6 +7,7 @@ import { InventarioStore } from '../../core/inventario.store';
 import { ListaStore } from '../../core/lista.store';
 import { InventarioFalso, enDias, producto } from '../../../testing/inventario-falso';
 import { ListaFalsa, item } from '../../../testing/lista-falsa';
+import { Hoy } from '../../core/hoy';
 import { Shell } from './shell';
 
 describe('Shell', () => {
@@ -117,5 +118,25 @@ describe('Shell', () => {
     const pestana = raiz().querySelector('a[href="/por-caducar"]')!;
     expect(pestana.querySelector('.insignia-aviso')?.textContent?.trim()).toBe('2');
     expect(pestana.textContent).toContain('2 urgentes');
+  });
+
+  it('muestra la fecha de hoy y la cambia cuando cambia el día', async () => {
+    await crear('Mamá');
+    const hoy = TestBed.inject(Hoy);
+    hoy.fecha.set(new Date(2026, 10, 20));
+    await fixture.whenStable();
+
+    const fecha = raiz().querySelector('time.hoy')!;
+    expect(fecha.getAttribute('datetime')).toBe('2026-11-20');
+    // El lector de pantalla oye "Hoy es Viernes, 20 nov" (la versión larga se oculta con CSS).
+    expect(fecha.querySelector('.hoy-dia')?.textContent).toBe('Viernes');
+    expect(fecha.querySelector('.hoy-corta')?.textContent).toBe('20 nov');
+    expect(fecha.querySelector('.hoy-larga')?.textContent).toBe('20 de noviembre');
+    expect(fecha.textContent).toMatch(/^Hoy es Viernes, 20 nov/);
+
+    hoy.fecha.set(new Date(2026, 10, 21));
+    await fixture.whenStable();
+    expect(fecha.getAttribute('datetime')).toBe('2026-11-21');
+    expect(fecha.querySelector('.hoy-dia')?.textContent).toBe('Sábado');
   });
 });

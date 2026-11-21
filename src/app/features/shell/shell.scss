@@ -24,6 +24,49 @@ $alto-pestanas: 4rem;
   background: var(--color-superficie);
 }
 
+// Fecha de hoy: para comparar a la mano con "Caduca el 25 nov"
+.hoy {
+  display: grid;
+  margin-left: auto;
+  line-height: 1.2;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.hoy-dia {
+  font-size: var(--texto-sm);
+  font-weight: 600;
+}
+
+.hoy-fecha {
+  color: var(--color-texto-suave);
+  font-size: 0.75rem;
+}
+
+.hoy-larga {
+  display: none;
+}
+
+@media (min-width: 40rem) {
+  .hoy {
+    display: flex;
+    align-items: baseline;
+    gap: var(--espacio-2);
+  }
+
+  .hoy-fecha {
+    font-size: var(--texto-sm);
+  }
+
+  .hoy-corta {
+    display: none;
+  }
+
+  .hoy-larga {
+    display: inline;
+  }
+}
+
 .cuenta {
   display: grid;
   place-items: center;

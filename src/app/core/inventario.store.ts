@@ -3,6 +3,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js';
 import { AuthService } from './auth.service';
 import type { Tables, TablesInsert, TablesUpdate } from './database.types';
 import { TipoMovimiento, aplicarMovimiento, diasHasta } from './formato';
+import { Hoy } from './hoy';
 import { SupabaseService } from './supabase.service';
 
 const COLUMNAS_PRODUCTO =
@@ -42,6 +43,7 @@ export type DatosProducto = Pick<
 export class InventarioStore {
   private readonly supabase = inject(SupabaseService).client;
   private readonly auth = inject(AuthService);
+  private readonly reloj = inject(Hoy);
 
   readonly productos = signal<Producto[]>([]);
   readonly categorias = signal<Catalogo[]>([]);
@@ -76,7 +78,7 @@ export class InventarioStore {
    * la de la base (que está en UTC y en México ya es "mañana" desde la tarde).
    */
   readonly porCaducar = computed(() => {
-    const hoy = new Date();
+    const hoy = this.reloj.fecha();
     return this.productos()
       .filter((p) => p.caduca_el && p.cantidad > 0)
       .map((producto) => ({ producto, dias: diasHasta(producto.caduca_el!, hoy) }))

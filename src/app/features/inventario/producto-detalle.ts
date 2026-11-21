@@ -23,6 +23,7 @@ import {
   nombreUnidad,
   textoQueda,
 } from '../../core/formato';
+import { Hoy } from '../../core/hoy';
 import { InventarioStore, Movimiento, Producto } from '../../core/inventario.store';
 import { Avisos } from '../../shared/avisos';
 import { Icono } from '../../shared/icono';
@@ -52,6 +53,7 @@ export class ProductoDetalle implements OnInit {
 
   protected readonly store = inject(InventarioStore);
   private readonly avisos = inject(Avisos);
+  private readonly reloj = inject(Hoy);
   private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly tipos = TIPOS_MOVIMIENTO;
@@ -75,7 +77,7 @@ export class ProductoDetalle implements OnInit {
     return {
       cantidad: formatoCantidad(p.cantidad, p.unidad),
       stock: estadoStock(p),
-      caducidad: estadoCaducidad(p.caduca_el),
+      caducidad: estadoCaducidad(p.caduca_el, this.reloj.fecha()),
       ubicacion: (p.ubicacion_id && this.store.nombreUbicacion().get(p.ubicacion_id)) || '—',
       categoria: (p.categoria_id && this.store.nombreCategoria().get(p.categoria_id)) || '—',
       minimo: p.minimo > 0 ? formatoCantidad(p.minimo, p.unidad) : 'Sin aviso',

@@ -16,6 +16,7 @@ import {
   pasoRapido,
   textoQueda,
 } from '../../core/formato';
+import { Hoy } from '../../core/hoy';
 import { InventarioStore, Producto } from '../../core/inventario.store';
 import { Avisos } from '../../shared/avisos';
 import { Dialogo } from '../../shared/dialogo';
@@ -46,6 +47,7 @@ type Ventana = { tipo: 'crear' } | { tipo: 'editar'; id: number } | { tipo: 'det
 export class Inventario {
   protected readonly store = inject(InventarioStore);
   private readonly avisos = inject(Avisos);
+  private readonly reloj = inject(Hoy);
 
   protected readonly busqueda = signal('');
   protected readonly ubicacion = signal<number | null>(null);
@@ -64,6 +66,7 @@ export class Inventario {
     const categoria = this.categoria();
     const ubicaciones = this.store.nombreUbicacion();
     const categorias = this.store.nombreCategoria();
+    const hoy = this.reloj.fecha();
 
     return this.store
       .productos()
@@ -85,7 +88,7 @@ export class Inventario {
             .filter(Boolean)
             .join(' · '),
           stock: estadoStock(p),
-          caducidad: estadoCaducidad(p.caduca_el),
+          caducidad: estadoCaducidad(p.caduca_el, hoy),
           paso,
           pasoTexto: formatoCantidad(paso, p.unidad),
         };

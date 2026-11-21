@@ -2,6 +2,14 @@
   <header class="barra">
     <app-marca />
 
+    <time class="hoy" [attr.datetime]="hoy().iso">
+      <span class="solo-lectores">Hoy es </span>
+      <span class="hoy-dia">{{ hoy().dia }}</span
+      ><span class="solo-lectores">, </span>
+      <span class="hoy-fecha hoy-corta">{{ hoy().corta }}</span>
+      <span class="hoy-fecha hoy-larga">{{ hoy().larga }}</span>
+    </time>
+
     <button
       type="button"
       class="cuenta"

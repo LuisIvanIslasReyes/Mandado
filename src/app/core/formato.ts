@@ -10,6 +10,9 @@ const fechaCorta = new Intl.DateTimeFormat('es-MX', {
   month: 'short',
   timeZone: 'UTC',
 });
+const diaSemana = new Intl.DateTimeFormat('es-MX', { weekday: 'long' });
+const diaMesCorto = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'short' });
+const diaMesLargo = new Intl.DateTimeFormat('es-MX', { day: 'numeric', month: 'long' });
 const hora = new Intl.DateTimeFormat('es-MX', { hour: 'numeric', minute: '2-digit' });
 
 const NOMBRES_UNIDAD: Record<Unidad, [singular: string, plural: string]> = {
@@ -111,6 +114,22 @@ export function estadoCaducidad(fecha: string | null, hoy = new Date()): EstadoC
 export function formatoFecha(fecha: string): string {
   const [anio, mes, dia] = fecha.split('-').map(Number);
   return fechaCorta.format(Date.UTC(anio, mes - 1, dia));
+}
+
+/** La fecha de hoy para la barra superior: "Jueves", "20 nov" / "20 de noviembre". */
+export function formatoHoy(fecha: Date): {
+  dia: string;
+  corta: string;
+  larga: string;
+  iso: string;
+} {
+  const dia = diaSemana.format(fecha);
+  return {
+    dia: dia.charAt(0).toLocaleUpperCase('es-MX') + dia.slice(1),
+    corta: diaMesCorto.format(fecha).replace('.', ''),
+    larga: diaMesLargo.format(fecha),
+    iso: `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, '0')}-${String(fecha.getDate()).padStart(2, '0')}`,
+  };
 }
 
 /** Fecha y hora de un movimiento: "hoy, 2:30 p.m.", "ayer, 9:05 a.m." o "12 nov". */

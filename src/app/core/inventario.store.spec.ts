@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { enDias, producto } from '../../testing/inventario-falso';
 import { AuthService } from './auth.service';
+import { Hoy } from './hoy';
 import { InventarioStore, mensajeDeError } from './inventario.store';
 import { SupabaseService } from './supabase.service';
 
@@ -77,6 +78,19 @@ describe('InventarioStore.porCaducar', () => {
       ['Pollo', 6],
     ]);
     expect(store.urgentesPorCaducar()).toBe(2);
+  });
+
+  it('se recalcula cuando cambia el día', () => {
+    const store = crear();
+    store.productos.set([producto({ nombre: 'Queso', caduca_el: enDias(4) })]);
+    expect(store.urgentesPorCaducar()).toBe(0);
+
+    const hoy = TestBed.inject(Hoy);
+    const manana = new Date(hoy.fecha());
+    manana.setDate(manana.getDate() + 1);
+    hoy.fecha.set(manana);
+    expect(store.porCaducar()[0].dias).toBe(3);
+    expect(store.urgentesPorCaducar()).toBe(1);
   });
 });
 

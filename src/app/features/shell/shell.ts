@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../core/auth.service';
+import { formatoHoy } from '../../core/formato';
+import { Hoy } from '../../core/hoy';
 import { Avisos } from '../../shared/avisos';
 import { InventarioStore } from '../../core/inventario.store';
 import { ListaStore } from '../../core/lista.store';
@@ -32,6 +34,8 @@ export class Shell {
   private readonly supabase = inject(SupabaseService).client;
   private readonly router = inject(Router);
   protected readonly avisos = inject(Avisos);
+  private readonly reloj = inject(Hoy);
+  protected readonly hoy = computed(() => formatoHoy(this.reloj.fecha()));
   private readonly inventario = inject(InventarioStore);
   private readonly lista = inject(ListaStore);
 

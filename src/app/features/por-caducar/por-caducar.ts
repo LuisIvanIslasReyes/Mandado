@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import { estadoCaducidad, formatoCantidad } from '../../core/formato';
+import { Hoy } from '../../core/hoy';
 import { InventarioStore, Producto } from '../../core/inventario.store';
 import { Dialogo } from '../../shared/dialogo';
 import { Vacio } from '../../shared/vacio';
@@ -25,16 +26,18 @@ type Ventana = { tipo: 'detalle' | 'editar'; id: number };
 export class PorCaducar {
   protected readonly store = inject(InventarioStore);
   protected readonly ventana = signal<Ventana | null>(null);
+  private readonly reloj = inject(Hoy);
 
   private readonly filas = computed<Fila[]>(() => {
     const ubicaciones = this.store.nombreUbicacion();
+    const hoy = this.reloj.fecha();
     return this.store.porCaducar().map(({ producto: p, dias }) => {
       const lugar = p.ubicacion_id && ubicaciones.get(p.ubicacion_id);
       const hay = `Hay ${formatoCantidad(p.cantidad, p.unidad)}`;
       return {
         producto: p,
         dias,
-        cuando: estadoCaducidad(p.caduca_el)?.texto ?? '',
+        cuando: estadoCaducidad(p.caduca_el, hoy)?.texto ?? '',
         detalle: lugar ? `${hay} · ${lugar}` : hay,
       };
     });
