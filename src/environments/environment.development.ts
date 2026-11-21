@@ -1,8 +1,9 @@
-// Por ahora desarrollo y producción usan el mismo proyecto de Supabase.
-// Si algún día corres Supabase local (`pnpm supabase start`), cambia estos valores
-// por los que imprime ese comando.
+// Desarrollo (`pnpm start`) usa Supabase LOCAL, nunca producción.
+// Antes de `pnpm start`, levántalo con `pnpm supabase start` (requiere Docker Desktop abierto).
+// Si cambian los valores, consúltalos con `pnpm supabase status`.
+// Studio local: http://127.0.0.1:54323 · Correos de auth (Mailpit): http://127.0.0.1:54324
 export const environment = {
   production: false,
-  supabaseUrl: 'https://ijgawvwqfeuqqibeotfi.supabase.co',
-  supabasePublishableKey: 'sb_publishable__G8-Vu8v0SkbGGyK-wrlDw_x_Ga1TV4',
+  supabaseUrl: 'http://127.0.0.1:54321',
+  supabasePublishableKey: 'sb_publishable_ACJWlzQHlZjBrEguHvfOxg_3BJgxAaH',
 };
