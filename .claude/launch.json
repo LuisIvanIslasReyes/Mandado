@@ -7,6 +7,13 @@
       "runtimeArgs": ["start"],
       "port": 4200,
       "url": "http://localhost:4200"
+    },
+    {
+      "name": "mandado-lan",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start:lan"],
+      "port": 4200,
+      "url": "http://192.168.3.54:4200"
     }
   ]
 }
